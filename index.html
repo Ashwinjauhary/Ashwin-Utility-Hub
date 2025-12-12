@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self';">
+  <title>Ashwin Utility Hub - Your Premium Dashboard</title>
+  <meta name="description"
+    content="A stunning multi-tool dashboard with glassmorphism UI, neon effects, and powerful utilities created by Ashwin Jauhary">
+  <meta name="keywords"
+    content="productivity, dashboard, tools, timer, todo, mood tracker, student validator, utilities">
+  <meta name="author" content="Ashwin Jauhary">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://your-domain.com/">
+  <meta property="og:title" content="Ashwin Utility Hub - Multi-Tool Productivity Dashboard">
+  <meta property="og:description"
+    content="A stunning multi-tool dashboard with glassmorphism UI, neon effects, and powerful utilities">
+  <meta property="og:image" content="https://your-domain.com/preview.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://your-domain.com/">
+  <meta property="twitter:title" content="Ashwin Utility Hub - Multi-Tool Productivity Dashboard">
+  <meta property="twitter:description"
+    content="A stunning multi-tool dashboard with glassmorphism UI, neon effects, and powerful utilities">
+  <meta property="twitter:image" content="https://your-domain.com/preview.png">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#667eea">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+
+  <style>
+    /* Prevent horizontal scroll */
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding-top: 100px;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      text-align: center;
+      z-index: 10;
+      animation: fadeIn 1s ease;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+
+    .hero-datetime {
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      margin-bottom: 3rem;
+      font-weight: 500;
+      padding: 1rem 2rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-full);
+      display: inline-block;
+    }
+
+    /* Tool Cards */
+    .tools-section {
+      padding: 4rem 0;
+    }
+
+    .tool-card {
+      position: relative;
+      padding: 2.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--glass-border);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 0;
+    }
+
+    .tool-card:hover::before {
+      opacity: 0.1;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 60px var(--shadow);
+      border-color: var(--accent);
+    }
+
+    .tool-card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tool-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      display: block;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .tool-card:nth-child(2) .tool-icon {
+      animation-delay: 0.2s;
+    }
+
+    .tool-card:nth-child(3) .tool-icon {
+      animation-delay: 0.4s;
+    }
+
+    .tool-card:nth-child(4) .tool-icon {
+      animation-delay: 0.6s;
+    }
+
+    .tool-card:nth-child(5) .tool-icon {
+      animation-delay: 0.8s;
+    }
+
+    .tool-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .tool-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      color: white;
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    /* Features Grid */
+    .features-section {
+      padding: 4rem 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      margin: 2rem 0;
+    }
+
+    .feature-item {
+      text-align: center;
+      padding: 2rem;
+      animation: fadeIn 0.6s ease backwards;
+    }
+
+    .feature-item:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .feature-item:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .feature-item:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .feature-item:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    /* Shortcuts Info */
+    .shortcuts-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--glass-border);
+      z-index: 999;
+      max-width: 300px;
+      transform: translateY(calc(100% + 40px));
+      transition: transform 0.3s ease;
+    }
+
+    .shortcuts-panel.show {
+      transform: translateY(0);
+    }
+
+    .shortcuts-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      color: white;
+      border: none;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-weight: 600;
+      z-index: 1000;
+      box-shadow: 0 4px 20px var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .shortcuts-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--shadow);
+    }
+
+    .shortcut-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .shortcut-item:last-child {
+      border-bottom: none;
+    }
+
+    .shortcut-key {
+      background: var(--accent);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    /* Floating Action Buttons */
+    .fab-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 999;
+    }
+
+    .fab {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--shadow);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fab:hover {
+      transform: scale(1.1) rotate(10deg);
+      box-shadow: 0 6px 30px var(--shadow);
+    }
+
+    /* Stats Badge in Navbar */
+    .stats-badge-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-full);
+      border: 1px solid var(--glass-border);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .stats-badge-nav .stats-value {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ========== RESPONSIVE STYLES ========== */
+
+    /* Mobile Phones (480px and below) */
+    @media (max-width: 480px) {
+      .hero {
+        padding-top: 80px;
+        min-height: auto;
+        padding-bottom: 2rem;
+      }
+
+      .hero-datetime {
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+      }
+
+      .tool-card {
+        padding: 1.5rem;
+      }
+
+      .tool-icon {
+        font-size: 2.5rem;
+      }
+
+      .tool-title {
+        font-size: 1.25rem;
+      }
+
+      .tool-description {
+        font-size: 0.875rem;
+      }
+
+      .tool-badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+      }
+
+      .tools-section {
+        padding: 2rem 0;
+      }
+
+      .features-section {
+        padding: 2rem 0;
+        margin: 1rem 0;
+      }
+
+      .feature-item {
+        padding: 1rem;
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+      }
+
+      .feature-title {
+        font-size: 1rem;
+      }
+
+      .shortcut-item {
+        font-size: 0.75rem;
+      }
+
+      .fab-container {
+        bottom: 10px;
+        right: 10px;
+        gap: 0.5rem;
+      }
+
+      .fab {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+      }
+
+      .stats-badge-nav {
+        display: none;
+        /* Hide on very small screens */
+      }
+
+
+      .shortcuts-panel {
+        max-width: calc(100% - 20px);
+        left: 10px;
+        bottom: 10px;
+      }
+
+      .shortcuts-toggle {
+        bottom: 10px;
+        left: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    /* Tablets (768px and below) */
+    @media (max-width: 768px) {
+      .hero {
+        padding-top: 90px;
+      }
+
+      .hero-datetime {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+      }
+
+      .tool-card {
+        padding: 2rem;
+      }
+
+      .tool-icon {
+        font-size: 3rem;
+      }
+
+      .tool-title {
+        font-size: 1.5rem;
+      }
+
+      .tools-section {
+        padding: 3rem 0;
+      }
+
+      .features-section {
+        padding: 3rem 0;
+      }
+
+      .fab {
+        width: 55px;
+        height: 55px;
+      }
+    }
+
+    /* Small Laptops (1024px and below) */
+    @media (max-width: 1024px) {
+      .tool-card {
+        padding: 2.25rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loader -->
+  <div id="loader" class="loader-container">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Particles Background -->
+  <div id="particles-js"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-logo">⚡ Ashwin Hub</div>
+      <ul class="navbar-nav">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="pages/stats.html">Stats</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <!-- Stats Badge in Navbar -->
+        <div class="stats-badge-nav">
+          <span>🔥 <span class="stats-value" id="streak-value">0</span></span>
+          <span style="margin-left: 1rem;">👁️ <span class="stats-value" id="visits-value">0</span></span>
+        </div>
+        <button id="theme-toggle" class="btn btn-secondary">☀️</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Ashwin Utility Hub</h1>
+        <p class="hero-subtitle">Your Premium All-in-One Productivity Suite</p>
+        <div class="hero-datetime" id="current-datetime">Loading...</div>
+        <div class="flex gap-md justify-center" style="flex-wrap: wrap;">
+          <a href="#tools" class="btn btn-primary">Explore Tools</a>
+          <a href="pages/stats.html" class="btn btn-neon">View Stats</a>
+          <button id="voice-btn" class="btn btn-secondary">🎤 Voice Commands</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Section -->
+  <section class="tools-section" id="tools">
+    <div class="container">
+      <h2 class="text-center mb-xl" style="font-size: 3rem;">Powerful Tools at Your Fingertips</h2>
+
+      <div class="grid grid-3 gap-lg" style="margin-bottom: 3rem;">
+        <!-- Tool 1: Student Validation -->
+        <div class="tool-card" onclick="navigateToTool('pages/student.html', 'Student Form')">
+          <div class="tool-card-content">
+            <span class="tool-icon">📘</span>
+            <h3 class="tool-title">Student Validator</h3>
+            <p class="tool-description">
+              Intelligent form validation with real-time feedback and AI-like suggestions.
+            </p>
+            <span class="tool-badge">Press 1</span>
+          </div>
+        </div>
+
+        <!-- Tool 2: Timer & Stopwatch -->
+        <div class="tool-card" onclick="navigateToTool('pages/timer.html', 'Timer')">
+          <div class="tool-card-content">
+            <span class="tool-icon">⏱️</span>
+            <h3 class="tool-title">Timer & Stopwatch</h3>
+            <p class="tool-description">
+              Beautiful countdown timer with circular animation and precision stopwatch.
+            </p>
+            <span class="tool-badge">Press 2</span>
+          </div>
+        </div>
+
+        <!-- Tool 3: Product Search -->
+        <div class="tool-card" onclick="navigateToTool('pages/products.html', 'Products')">
+          <div class="tool-card-content">
+            <span class="tool-icon">🛒</span>
+            <h3 class="tool-title">Product Explorer</h3>
+            <p class="tool-description">
+              Advanced product filtering with search, categories, and comparison mode.
+            </p>
+            <span class="tool-badge">Press 3</span>
+          </div>
+        </div>
+
+        <!-- Tool 4: Mood Tracker -->
+        <div class="tool-card" onclick="navigateToTool('pages/mood.html', 'Mood Tracker')">
+          <div class="tool-card-content">
+            <span class="tool-icon">😊</span>
+            <h3 class="tool-title">Mood Tracker</h3>
+            <p class="tool-description">
+              Track your daily mood with visual heatmap and insightful analytics.
+            </p>
+            <span class="tool-badge">Press 4</span>
+          </div>
+        </div>
+
+        <!-- Tool 5: Todo App -->
+        <div class="tool-card" onclick="navigateToTool('pages/todo.html', 'Todo')">
+          <div class="tool-card-content">
+            <span class="tool-icon">✅</span>
+            <h3 class="tool-title">Smart Todo</h3>
+            <p class="tool-description">
+              Feature-rich task manager with drag & drop, priorities, and focus mode.
+            </p>
+            <span class="tool-badge">Press 5</span>
+          </div>
+        </div>
+
+        <!-- Stats Tool -->
+        <div class="tool-card" onclick="navigateToTool('pages/stats.html', 'Stats')">
+          <div class="tool-card-content">
+            <span class="tool-icon">📊</span>
+            <h3 class="tool-title">Usage Stats</h3>
+            <p class="tool-description">
+              Comprehensive analytics and insights about your productivity patterns.
+            </p>
+            <span class="tool-badge">Auto-Generated</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="features-section">
+        <h3 class="text-center mb-lg" style="font-size: 2rem;">Premium Features</h3>
+        <div class="grid grid-4 gap-md">
+          <div class="feature-item">
+            <div class="feature-icon">🎨</div>
+            <h4 class="feature-title">Glassmorphism UI</h4>
+            <p class="feature-description">Modern frosted glass design</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🌓</div>
+            <h4 class="feature-title">Theme Switcher</h4>
+            <p class="feature-description">Light, Dark & Neon modes</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎤</div>
+            <h4 class="feature-title">Voice Commands</h4>
+            <p class="feature-description">Control with your voice</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">⌨️</div>
+            <h4 class="feature-title">Keyboard Shortcuts</h4>
+            <p class="feature-description">Lightning-fast navigation</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shortcuts Panel -->
+  <div id="shortcuts-panel" class="shortcuts-panel">
+    <h4 style="margin-bottom: 1rem; color: var(--text-primary);">Keyboard Shortcuts</h4>
+    <div class="shortcut-item">
+      <span>Student Form</span>
+      <span class="shortcut-key">1</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Timer</span>
+      <span class="shortcut-key">2</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Products</span>
+      <span class="shortcut-key">3</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Mood Tracker</span>
+      <span class="shortcut-key">4</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Todo</span>
+      <span class="shortcut-key">5</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Home</span>
+      <span class="shortcut-key">0</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Voice Toggle</span>
+      <span class="shortcut-key">Ctrl+V</span>
+    </div>
+    <div class="shortcut-item">
+      <span>Easter Egg</span>
+      <span class="shortcut-key">Ctrl+Shift+J</span>
+    </div>
+  </div>
+
+  <button class="shortcuts-toggle" onclick="toggleShortcuts()">⌨️ Shortcuts</button>
+
+  <!-- Floating Action Buttons -->
+  <div class="fab-container">
+    <button class="fab" id="theme-fab" onclick="themeManager.toggle()" title="Change Theme">🎨</button>
+    <button class="fab" onclick="scrollToTop()" title="Scroll to Top">⬆️</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="js/global.js"></script>
+
+  <script>
+    function navigateToTool(url, toolName) {
+      if (typeof updateStats === 'function') {
+        updateStats('mostViewedFeature', toolName);
+      }
+      window.location.href = url;
+    }
+
+    function toggleShortcuts() {
+      const panel = document.getElementById('shortcuts-panel');
+      panel.classList.toggle('show');
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Update stats display
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof statsTracker !== 'undefined') {
+        const stats = statsTracker.getStats();
+        document.getElementById('streak-value').textContent = stats.dailyStreak;
+        document.getElementById('visits-value').textContent = stats.totalVisits;
+      }
+    });
+  </script>
+</body>
+
+</html>

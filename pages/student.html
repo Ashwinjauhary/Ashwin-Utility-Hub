@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self';">
+    <title>Student Validation Form - Ashwin Utility Hub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        body {
+            padding-top: 80px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .floating-input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .floating-input {
+            width: 100%;
+            padding: 1.5rem 1rem 0.5rem;
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .floating-input.valid {
+            border-color: var(--success);
+            animation: shake 0.3s ease;
+        }
+
+        .floating-input.invalid {
+            border-color: var(--error);
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .floating-label {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: transparent;
+        }
+
+        .floating-input:focus+.floating-label,
+        .floating-input:not(:placeholder-shown)+.floating-label {
+            top: 0.4rem;
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .floating-input.valid+.floating-label {
+            color: var(--success);
+        }
+
+        .floating-input.invalid+.floating-label {
+            color: var(--error);
+        }
+
+        .validation-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .floating-input.valid~.validation-icon.valid-icon,
+        .floating-input.invalid~.validation-icon.invalid-icon {
+            opacity: 1;
+        }
+
+        /* AI Feedback Box */
+        .ai-feedback {
+            margin-top: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .ai-feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ai-feedback.success {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success);
+            border-left: 3px solid var(--success);
+        }
+
+        .ai-feedback.error {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--error);
+            border-left: 3px solid var(--error);
+        }
+
+        .ai-feedback.info {
+            background: rgba(66, 153, 225, 0.1);
+            color: var(--info);
+            border-left: 3px solid var(--info);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-full);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: var(--radius-full);
+        }
+
+        /* Success Card */
+        .success-card {
+            display: none;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            margin-top: 2rem;
+            animation: fadeIn 0.6s ease;
+            text-align: center;
+        }
+
+        .success-card.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .student-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+        }
+
+        .student-detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .student-detail-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-group button {
+            flex: 1;
+        }
+
+        /* Loading Animation */
+        .submit-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="navbar-logo">⚡ Ashwin Hub</a>
+            <div class="navbar-actions">
+                <a href="../index.html" class="btn btn-secondary">← Home</a>
+                <button id="theme-toggle" class="btn btn-secondary">☀️</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>📘 Student Validation Form</h1>
+                <p style="color: var(--text-secondary);">AI-powered real-time validation</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="form-card">
+                <form id="student-form">
+                    <!-- Name Field -->
+                    <div class="floating-input-group">
+                        <input type="text" id="name" class="floating-input" placeholder=" " autocomplete="off">
+                        <label for="name" class="floating-label">Full Name</label>
+                        <span class="validation-icon valid-icon">✓</span>
+                        <span class="validation-icon invalid-icon">✗</span>
+                        <div class="ai-feedback" id="name-feedback"></div>
+                    </div>
+
+                    <!-- Age Field -->
+                    <div class="floating-input-group">
+                        <input type="number" id="age" class="floating-input" placeholder=" " min="18" max="30"
+                            autocomplete="off">
+                        <label for="age" class="floating-label">Age (18-30)</label>
+                        <span class="validation-icon valid-icon">✓</span>
+                        <span class="validation-icon invalid-icon">✗</span>
+                        <div class="ai-feedback" id="age-feedback"></div>
+                    </div>
+
+                    <!-- Roll Number Field -->
+                    <div class="floating-input-group">
+                        <input type="text" id="rollNumber" class="floating-input" placeholder=" " autocomplete="off">
+                        <label for="rollNumber" class="floating-label">Roll Number</label>
+                        <span class="validation-icon valid-icon">✓</span>
+                        <span class="validation-icon invalid-icon">✗</span>
+                        <div class="ai-feedback" id="rollNumber-feedback"></div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="floating-input-group">
+                        <input type="email" id="email" class="floating-input" placeholder=" " autocomplete="off">
+                        <label for="email" class="floating-label">Student Email</label>
+                        <span class="validation-icon valid-icon">✓</span>
+                        <span class="validation-icon invalid-icon">✗</span>
+                        <div class="ai-feedback" id="email-feedback"></div>
+                    </div>
+
+                    <!-- Department Field -->
+                    <div class="floating-input-group">
+                        <select id="department" class="floating-input">
+                            <option value="">Select Department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Civil">Civil</option>
+                            <option value="Electrical">Electrical</option>
+                        </select>
+                        <label for="department" class="floating-label">Department</label>
+                        <span class="validation-icon valid-icon">✓</span>
+                        <span class="validation-icon invalid-icon">✗</span>
+                        <div class="ai-feedback" id="department-feedback"></div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
+                            <span id="submit-text">Validate & Submit</span>
+                        </button>
+                        <button type="reset" class="btn btn-secondary" id="reset-btn">Reset Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Success Card -->
+            <div class="success-card" id="success-card">
+                <div class="success-icon">🎉</div>
+                <h2 style="color: var(--text-primary); margin-bottom: 1.5rem;">Validation Successful!</h2>
+
+                <div id="student-details"></div>
+
+                <button class="btn btn-primary mt-lg" onclick="resetForm()">
+                    Add Another Student
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="../js/global.js"></script>
+
+    <script>
+        // Validation State
+        const validationState = {
+            name: false,
+            age: false,
+            rollNumber: false,
+            email: false,
+            department: false
+        };
+
+        // AI Feedback Messages
+        const feedbackMessages = {
+            name: {
+                valid: "✨ Your name looks perfect!",
+                invalid: "❌ Please enter your full name (at least 3 characters)",
+                typing: "💡 Keep typing..."
+            },
+            age: {
+                valid: "✨ Age verified successfully!",
+                invalid: "❌ Age must be between 18 and 30",
+                empty: "💡 Please enter your age"
+            },
+            rollNumber: {
+                valid: "✨ Roll number format is correct!",
+                invalid: "❌ Roll number must be numeric (e.g., 12345)",
+                typing: "💡 Enter your roll number..."
+            },
+            email: {
+                valid: "✨ Student email verified!",
+                invalid: "❌ Invalid email format. Use: student@university.edu",
+                typing: "💡 Enter your student email..."
+            },
+            department: {
+                valid: "✨ Department selected!",
+                invalid: "❌ Please select a department"
+            }
+        };
+
+        // Validation Functions
+        function validateName(name) {
+            return name.trim().length >= 3 && /^[a-zA-Z\s]+$/.test(name);
+        }
+
+        function validateAge(age) {
+            const ageNum = parseInt(age);
+            return ageNum >= 18 && ageNum <= 30;
+        }
+
+        function validateRollNumber(rollNumber) {
+            return /^\d+$/.test(rollNumber) && rollNumber.length >= 3;
+        }
+
+        function validateEmail(email) {
+            // Student email pattern
+            const studentEmailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.(edu|ac|student)(\.[a-z]{2})?$/;
+            return studentEmailPattern.test(email);
+        }
+
+        function validateDepartment(department) {
+            return department !== '';
+        }
+
+        // Show Feedback
+        function showFeedback(fieldId, type, message) {
+            const feedbackEl = document.getElementById(`${fieldId}-feedback`);
+            feedbackEl.className = `ai-feedback show ${type}`;
+            feedbackEl.textContent = message;
+        }
+
+        // Update Progress
+        function updateProgress() {
+            const validCount = Object.values(validationState).filter(v => v).length;
+            const progress = (validCount / 5) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        // Validate Field
+        function validateField(fieldId, value, validator, fieldName) {
+            const input = document.getElementById(fieldId);
+            const isValid = validator(value);
+
+            validationState[fieldId] = isValid;
+
+            // Update input styling
+            input.classList.remove('valid', 'invalid');
+            if (value === '') {
+                showFeedback(fieldId, 'info', feedbackMessages[fieldId].typing || feedbackMessages[fieldId].empty);
+            } else if (isValid) {
+                input.classList.add('valid');
+                showFeedback(fieldId, 'success', feedbackMessages[fieldId].valid);
+            } else {
+                input.classList.add('invalid');
+                showFeedback(fieldId, 'error', feedbackMessages[fieldId].invalid);
+            }
+
+            updateProgress();
+        }
+
+        // Event Listeners
+        document.getElementById('name').addEventListener('input', (e) => {
+            validateField('name', e.target.value, validateName, 'Full Name');
+        });
+
+        document.getElementById('age').addEventListener('input', (e) => {
+            validateField('age', e.target.value, validateAge, 'Age');
+        });
+
+        document.getElementById('rollNumber').addEventListener('input', (e) => {
+            validateField('rollNumber', e.target.value, validateRollNumber, 'Roll Number');
+        });
+
+        document.getElementById('email').addEventListener('input', (e) => {
+            validateField('email', e.target.value, validateEmail, 'Email');
+        });
+
+        document.getElementById('department').addEventListener('change', (e) => {
+            validateField('department', e.target.value, validateDepartment, 'Department');
+        });
+
+        // Form Submit
+        document.getElementById('student-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Check if all fields are valid
+            const allValid = Object.values(validationState).every(v => v);
+
+            if (!allValid) {
+                showNotification('Please fill all fields correctly', 'error');
+                return;
+            }
+
+            // Show loading
+            const submitBtn = document.getElementById('submit-btn');
+            const submitText = document.getElementById('submit-text');
+            submitBtn.disabled = true;
+            submitText.innerHTML = '<span class="submit-loading"></span> Validating...';
+
+            // Simulate processing
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value,
+                rollNumber: document.getElementById('rollNumber').value,
+                email: document.getElementById('email').value,
+                department: document.getElementById('department').value
+            };
+
+            // Display success card
+            displaySuccessCard(formData);
+
+            // Reset button
+            submitBtn.disabled = false;
+            submitText.textContent = 'Validate & Submit';
+        });
+
+        // Display Success Card
+        function displaySuccessCard(data) {
+            const detailsHTML = `
+        <div class="student-detail">
+          <span class="student-detail-label">Name:</span>
+          <span class="student-detail-value">${data.name}</span>
+        </div>
+        <div class="student-detail">
+          <span class="student-detail-label">Age:</span>
+          <span class="student-detail-value">${data.age} years</span>
+        </div>
+        <div class="student-detail">
+          <span class="student-detail-label">Roll Number:</span>
+          <span class="student-detail-value">${data.rollNumber}</span>
+        </div>
+        <div class="student-detail">
+          <span class="student-detail-label">Email:</span>
+          <span class="student-detail-value">${data.email}</span>
+        </div>
+        <div class="student-detail">
+          <span class="student-detail-label">Department:</span>
+          <span class="student-detail-value">${data.department}</span>
+        </div>
+      `;
+
+            document.getElementById('student-details').innerHTML = detailsHTML;
+            document.getElementById('success-card').classList.add('show');
+            document.querySelector('.form-card').style.display = 'none';
+
+            showNotification('Student validated successfully!', 'success');
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('student-form').reset();
+            document.getElementById('success-card').classList.remove('show');
+            document.querySelector('.form-card').style.display = 'block';
+
+            // Reset validation state
+            Object.keys(validationState).forEach(key => {
+                validationState[key] = false;
+                const input = document.getElementById(key);
+                input.classList.remove('valid', 'invalid');
+                document.getElementById(`${key}-feedback`).className = 'ai-feedback';
+            });
+
+            updateProgress();
+        }
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            Object.keys(validationState).forEach(key => {
+                validationState[key] = false;
+                document.getElementById(`${key}-feedback`).className = 'ai-feedback';
+            });
+            updateProgress();
+        });
+    </script>
+</body>
+
+</html>

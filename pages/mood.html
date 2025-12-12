@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self';">
+    <title>Mood Tracker - Ashwin Utility Hub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😊</text></svg>">
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        body {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .mood-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .mood-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .mood-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 3px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mood-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .mood-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        }
+
+        .mood-emoji {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .mood-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-selector {
+            margin-bottom: 3rem;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .activity-chip {
+            padding: 1rem 1.5rem;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .activity-chip:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .activity-chip.selected {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .calendar-heatmap {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .heatmap-day {
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .heatmap-day:hover {
+            transform: scale(1.1);
+        }
+
+        .mood-happy {
+            background: #48bb78;
+            color: white;
+        }
+
+        .mood-sad {
+            background: #4299e1;
+            color: white;
+        }
+
+        .mood-angry {
+            background: #f56565;
+            color: white;
+        }
+
+        .mood-neutral {
+            background: #a0aec0;
+            color: white;
+        }
+
+        .mood-excited {
+            background: #ed8936;
+            color: white;
+        }
+
+        .quote-display {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .quote-text {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .quote-author {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="navbar-logo">⚡ Ashwin Hub</a>
+            <div class="navbar-actions">
+                <a href="../index.html" class="btn btn-secondary">← Home</a>
+                <button id="theme-toggle" class="btn btn-secondary">☀️</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="mood-container">
+            <h1 class="text-center" style="margin-bottom: 2rem;">😊 Daily Mood Tracker</h1>
+
+            <div class="glass-card" style="margin-bottom: 2rem; padding: 2rem;">
+                <h3>How are you feeling today?</h3>
+                <div class="mood-selector">
+                    <div class="mood-card" onclick="selectMood('Happy')">
+                        <span class="mood-emoji">😊</span>
+                        <div class="mood-label">Happy</div>
+                    </div>
+                    <div class="mood-card" onclick="selectMood('Sad')">
+                        <span class="mood-emoji">😢</span>
+                        <div class="mood-label">Sad</div>
+                    </div>
+                    <div class="mood-card" onclick="selectMood('Angry')">
+                        <span class="mood-emoji">😠</span>
+                        <div class="mood-label">Angry</div>
+                    </div>
+                    <div class="mood-card" onclick="selectMood('Neutral')">
+                        <span class="mood-emoji">😐</span>
+                        <div class="mood-label">Neutral</div>
+                    </div>
+                    <div class="mood-card" onclick="selectMood('Excited')">
+                        <span class="mood-emoji">🤩</span>
+                        <div class="mood-label">Excited</div>
+                    </div>
+                </div>
+
+                <div class="activity-selector">
+                    <h3>What did you do today?</h3>
+                    <div class="activity-grid">
+                        <div class="activity-chip" onclick="selectActivity('Study')">📚 Study</div>
+                        <div class="activity-chip" onclick="selectActivity('Gym')">💪 Gym</div>
+                        <div class="activity-chip" onclick="selectActivity('Gaming')">🎮 Gaming</div>
+                        <div class="activity-chip" onclick="selectActivity('Work')">💼 Work</div>
+                        <div class="activity-chip" onclick="selectActivity('Rest')">🛌 Rest</div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="saveMood()">Save Today's Mood</button>
+                </div>
+            </div>
+
+            <!-- Calendar Heatmap -->
+            <div class="calendar-heatmap">
+                <h3>Monthly Mood Heatmap</h3>
+                <div class="heatmap-grid" id="heatmap-grid"></div>
+            </div>
+
+
+
+            <!-- Quote Display -->
+            <div class="quote-display" id="quote-display" style="display: none;">
+                <div class="quote-text" id="quote-text"></div>
+                <div class="quote-author" id="quote-author"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="../js/global.js"></script>
+
+    <script>
+        let selectedMood = null;
+        let selectedActivity = null;
+        const moodData = JSON.parse(localStorage.getItem('moodData') || '{}');
+
+        const quotes = {
+            Happy: [
+                { text: "Happiness is not something ready made. It comes from your own actions.", author: "Dalai Lama" },
+                { text: "The purpose of our lives is to be happy.", author: "Dalai Lama" }
+            ],
+            Sad: [
+                { text: "Every storm runs out of rain.", author: "Maya Angelou" },
+                { text: "This too shall pass.", author: "Persian Proverb" }
+            ],
+            Angry: [
+                { text: "Holding onto anger is like drinking poison and expecting the other person to die.", author: "Buddha" },
+                { text: "For every minute you are angry you lose sixty seconds of happiness.", author: "Ralph Waldo Emerson" }
+            ],
+            Neutral: [
+                { text: "Peace comes from within. Do not seek it without.", author: "Buddha" },
+                { text: "Be yourself; everyone else is already taken.", author: "Oscar Wilde" }
+            ],
+            Excited: [
+                { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+                { text: "Dream big and dare to fail.", author: "Norman Vaughan" }
+            ]
+        };
+
+        function selectMood(mood) {
+            selectedMood = mood;
+            document.querySelectorAll('.mood-card').forEach(card => card.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            showQuote(mood);
+        }
+
+        function selectActivity(activity) {
+            selectedActivity = activity;
+            document.querySelectorAll('.activity-chip').forEach(chip => chip.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function saveMood() {
+            if (!selectedMood || !selectedActivity) {
+                showNotification('Please select both mood and activity', 'warning');
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            moodData[today] = { mood: selectedMood, activity: selectedActivity };
+            localStorage.setItem('moodData', JSON.stringify(moodData));
+
+            if (typeof updateStats === 'function') {
+                updateStats('mostChosenMood', selectedMood);
+                updateStats('mostSelectedActivity', selectedActivity);
+            }
+
+            showNotification('Mood saved successfully!', 'success');
+            renderHeatmap();
+        }
+
+        function showQuote(mood) {
+            const moodQuotes = quotes[mood];
+            const randomQuote = moodQuotes[Math.floor(Math.random() * moodQuotes.length)];
+            document.getElementById('quote-text').textContent = `"${randomQuote.text}"`;
+            document.getElementById('quote-author').textContent = `— ${randomQuote.author}`;
+            document.getElementById('quote-display').style.display = 'block';
+        }
+
+        function renderHeatmap() {
+            const grid = document.getElementById('heatmap-grid');
+            const today = new Date();
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
+            grid.innerHTML = '';
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(today.getFullYear(), today.getMonth(), i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayData = moodData[dateStr];
+
+                const dayEl = document.createElement('div');
+                dayEl.className = `heatmap-day ${dayData ? 'mood-' + dayData.mood.toLowerCase() : ''}`;
+                dayEl.textContent = i;
+                dayEl.title = dayData ? `${dayData.mood} - ${dayData.activity}` : 'No data';
+                grid.appendChild(dayEl);
+            }
+        }
+
+
+
+        renderHeatmap();
+    </script>
+</body>
+
+</html>

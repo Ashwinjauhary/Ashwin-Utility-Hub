@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self';">
+    <title>Usage Stats - Ashwin Utility Hub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        body {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .chart-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: 300px !important;
+        }
+
+        .feature-usage {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: var(--glass-bg);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-bar {
+            height: 8px;
+            background: var(--glass-border);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .feature-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            transition: width 0.5s ease;
+        }
+
+        .feature-count {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .reset-section {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="navbar-logo">⚡ Ashwin Hub</a>
+            <div class="navbar-actions">
+                <a href="../index.html" class="btn btn-secondary">← Home</a>
+                <button id="theme-toggle" class="btn btn-secondary">☀️</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stats-container">
+            <h1 class="text-center" style="margin-bottom: 3rem;">📊 Usage Statistics</h1>
+
+            <!-- Main Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👁️</div>
+                    <div class="stat-value" id="total-visits">0</div>
+                    <div class="stat-label">Total Visits</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="total-todos">0</div>
+                    <div class="stat-label">Total Todos Created</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">😊</div>
+                    <div class="stat-value" id="mood-entries">0</div>
+                    <div class="stat-label">Mood Entries</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="daily-streak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            </div>
+
+            <!-- Most Chosen Mood -->
+            <div class="chart-section">
+                <h3>Most Chosen Moods</h3>
+                <canvas id="moodChart"></canvas>
+            </div>
+
+            <!-- Most Selected Activity -->
+            <div class="chart-section">
+                <h3>Most Selected Activities</h3>
+                <canvas id="activityChart"></canvas>
+            </div>
+
+            <!-- Most Viewed Features -->
+            <div class="chart-section">
+                <h3>Most Viewed Features</h3>
+                <div class="feature-usage" id="feature-usage"></div>
+            </div>
+
+            <!-- Theme Usage -->
+            <div class="chart-section">
+                <h3>Theme Preferences</h3>
+                <canvas id="themeChart"></canvas>
+            </div>
+
+            <!-- Reset Section -->
+            <div class="reset-section">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">⚠️ Danger Zone</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    This will reset all your statistics. This action cannot be undone.
+                </p>
+                <button class="btn btn-reset" onclick="resetStats()">Reset All Statistics</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/global.js"></script>
+
+    <script>
+        let stats = {};
+
+        function loadStats() {
+            if (typeof statsTracker !== 'undefined') {
+                stats = statsTracker.getStats();
+            } else {
+                stats = JSON.parse(localStorage.getItem('appStats') || '{}');
+            }
+
+            // Load todos count
+            const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+            stats.totalTodos = todos.length;
+
+            // Load mood entries
+            const moodData = JSON.parse(localStorage.getItem('moodData') || '{}');
+            stats.moodEntries = Object.keys(moodData).length;
+        }
+
+        function renderStats() {
+            document.getElementById('total-visits').textContent = stats.totalVisits || 0;
+            document.getElementById('total-todos').textContent = stats.totalTodos || 0;
+            document.getElementById('mood-entries').textContent = stats.moodEntries || 0;
+            document.getElementById('daily-streak').textContent = stats.dailyStreak || 0;
+
+            renderMoodChart();
+            renderActivityChart();
+            renderFeatureUsage();
+            renderThemeChart();
+        }
+
+        function renderMoodChart() {
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            const moodData = stats.mostChosenMood || {};
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(moodData),
+                    datasets: [{
+                        data: Object.values(moodData),
+                        backgroundColor: ['#48bb78', '#4299e1', '#f56565', '#a0aec0', '#ed8936'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function renderActivityChart() {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            const activityData = stats.mostSelectedActivity || {};
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(activityData),
+                    datasets: [{
+                        label: 'Times Selected',
+                        data: Object.values(activityData),
+                        backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderFeatureUsage() {
+            const featureData = stats.mostViewedFeature || {};
+            const maxViews = Math.max(...Object.values(featureData), 1);
+
+            const html = Object.entries(featureData).map(([feature, count]) => {
+                const percentage = (count / maxViews) * 100;
+                return `
+          <div class="feature-item">
+            <div class="feature-name">${feature}</div>
+            <div class="feature-bar">
+              <div class="feature-bar-fill" style="width: ${percentage}%"></div>
+            </div>
+            <div class="feature-count">${count} views</div>
+          </div>
+        `;
+            }).join('');
+
+            document.getElementById('feature-usage').innerHTML = html || '<p style="color: var(--text-secondary);">No feature usage data yet</p>';
+        }
+
+        function renderThemeChart() {
+            const ctx = document.getElementById('themeChart').getContext('2d');
+            const themeData = stats.themeChanges || { light: 0, dark: 0, neon: 0 };
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(themeData).map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+                    datasets: [{
+                        data: Object.values(themeData),
+                        backgroundColor: ['#fbbf24', '#1a202c', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function resetStats() {
+            if (confirm('Are you sure you want to reset ALL statistics? This cannot be undone!')) {
+                localStorage.removeItem('appStats');
+
+                if (typeof statsTracker !== 'undefined') {
+                    statsTracker.stats = {
+                        totalVisits: 0,
+                        totalTodos: 0,
+                        mostChosenMood: {},
+                        mostSelectedActivity: {},
+                        mostViewedFeature: {},
+                        dailyStreak: 0,
+                        lastVisit: null,
+                        themeChanges: { light: 0, dark: 0, neon: 0 }
+                    };
+                    statsTracker.saveStats();
+                }
+
+                showNotification('All statistics have been reset', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        }
+
+        // Initialize
+        loadStats();
+        renderStats();
+
+        // Update stats if feature viewed
+        if (typeof updateStats === 'function') {
+            updateStats('mostViewedFeature', 'Stats');
+        }
+    </script>
+</body>
+
+</html>
